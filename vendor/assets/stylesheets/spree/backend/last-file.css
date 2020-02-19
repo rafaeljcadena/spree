@@ -1,0 +1,7 @@
+.logo.navbar-brand {
+  display: flex; align-items: center;
+}
+
+#logo {
+  height: 25px;
+}

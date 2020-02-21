@@ -36,6 +36,8 @@ gem 'jbuilder', '~> 2.5'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 
+gem 'figaro'
+
 gem 'spree', '~> 3.7.0'
 gem 'spree_auth_devise', '~> 3.5'
 gem 'spree_gateway', '~> 3.4'

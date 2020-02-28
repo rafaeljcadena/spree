@@ -41,6 +41,8 @@ gem 'figaro'
 gem 'spree', '~> 3.7.0'
 gem 'spree_auth_devise', '~> 3.5'
 gem 'spree_gateway', '~> 3.4'
+gem 'spree_i18n', github: 'spree-contrib/spree_i18n'
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

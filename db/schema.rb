@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_19_185524) do
+ActiveRecord::Schema.define(version: 2020_02_28_161557) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 2020_02_19_185524) do
     t.string "scope"
     t.datetime "created_at"
     t.datetime "deleted_at"
+    t.string "locale"
     t.index ["deleted_at"], name: "index_friendly_id_slugs_on_deleted_at"
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
@@ -568,7 +569,7 @@ ActiveRecord::Schema.define(version: 2020_02_19_185524) do
 
   create_table "spree_properties", force: :cascade do |t|
     t.string "name"
-    t.string "presentation", null: false
+    t.string "presentation"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_spree_properties_on_name"
@@ -752,6 +753,16 @@ ActiveRecord::Schema.define(version: 2020_02_19_185524) do
     t.index ["shipping_category_id", "shipping_method_id"], name: "unique_spree_shipping_method_categories", unique: true
     t.index ["shipping_category_id"], name: "index_spree_shipping_method_categories_on_shipping_category_id"
     t.index ["shipping_method_id"], name: "index_spree_shipping_method_categories_on_shipping_method_id"
+  end
+
+  create_table "spree_shipping_method_translations", force: :cascade do |t|
+    t.integer "spree_shipping_method_id", null: false
+    t.string "locale", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "name"
+    t.index ["locale"], name: "index_spree_shipping_method_translations_on_locale"
+    t.index ["spree_shipping_method_id"], name: "index_c713dce023452222dbb97ceedfc9eddb4f02a87f"
   end
 
   create_table "spree_shipping_method_zones", force: :cascade do |t|
@@ -995,7 +1006,7 @@ ActiveRecord::Schema.define(version: 2020_02_19_185524) do
   end
 
   create_table "spree_taxonomies", force: :cascade do |t|
-    t.string "name", null: false
+    t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "position", default: 0
@@ -1005,7 +1016,7 @@ ActiveRecord::Schema.define(version: 2020_02_19_185524) do
   create_table "spree_taxons", force: :cascade do |t|
     t.integer "parent_id"
     t.integer "position", default: 0
-    t.string "name", null: false
+    t.string "name"
     t.string "permalink"
     t.integer "taxonomy_id"
     t.integer "lft"

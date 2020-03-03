@@ -1,6 +1,6 @@
 module Spree
   module CheckoutControllerDecorator
-    include OffsitePayments::Integrations
+    # include OffsitePayments::Integrations
     
     # Updates the order and advances to the next state (when possible.)
   #   def update

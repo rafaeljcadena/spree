@@ -43,8 +43,10 @@ gem 'spree_auth_devise', '~> 3.5'
 gem 'spree_gateway', '~> 3.4'
 gem 'spree_i18n', github: 'spree-contrib/spree_i18n'
 
-gem 'offsite_payments'
+# gem 'offsite_payments'
 # gem 'shopify-money', require: 'money'
+
+gem "pagseguro-oficial"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

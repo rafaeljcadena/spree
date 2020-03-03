@@ -37,9 +37,6 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
-    active_utils (3.3.17)
-      activesupport (>= 4.2)
-      i18n
     activejob (5.2.4.1)
       activesupport (= 5.2.4.1)
       globalid (>= 0.3.6)
@@ -69,6 +66,8 @@ GEM
       activerecord (>= 3.0)
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
+    aitch (1.1.0)
+      nokogiri
     archive-zip (0.12.0)
       io-like (~> 0.3.0)
     arel (9.0.0)
@@ -158,6 +157,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (6.0.1)
       railties (>= 3.2.16)
+    json (2.3.0)
     kaminari (1.0.1)
       activesupport (>= 4.1.0)
       kaminari-actionview (= 1.0.1)
@@ -201,15 +201,12 @@ GEM
     nio4r (2.5.2)
     nokogiri (1.10.8)
       mini_portile2 (~> 2.4.0)
-    offsite_payments (2.7.21)
-      actionpack (>= 5.2.3)
-      actionview (>= 5.1.6.2)
-      active_utils (~> 3.3.0)
-      activesupport (>= 5.2.3)
-      builder (>= 2.1.2, < 4.0.0)
-      i18n (>= 0.6.6)
-      nokogiri (>= 1.8.5)
     orm_adapter (0.5.0)
+    pagseguro-oficial (2.4.0)
+      aitch (>= 0.2.1)
+      i18n
+      json
+      nokogiri
     paperclip (6.1.0)
       activemodel (>= 4.2.0)
       activesupport (>= 4.2.0)
@@ -438,7 +435,7 @@ DEPENDENCIES
   figaro
   jbuilder (~> 2.5)
   listen (>= 3.0.5, < 3.2)
-  offsite_payments
+  pagseguro-oficial
   pry-byebug
   pry-rails
   puma (~> 3.11)

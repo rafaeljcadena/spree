@@ -30,51 +30,78 @@ module Spree
       binding.pry if Rails.env.development?
       profile_id = credit_card.gateway_customer_profile_id
 
-      invoicing_url = OffsitePayments::Integrations::PagSeguro.invoicing_url
-      opt = { amount: 1100, forward_url: invoicing_url, checkout_token: 'D36CE9ABA6F74C119D764143C5849E15', credential2: 'D36CE9ABA6F74C119D764143C5849E15' }
-      helper = OffsitePayments::Integrations::PagSeguro::Helper.new(_options[:order_id], _options[:customer], opt)
+      
+
+      # invoicing_url = OffsitePayments::Integrations::PagSeguro.invoicing_url
+      # opt = { amount: 1100, forward_url: invoicing_url, checkout_token: 'D36CE9ABA6F74C119D764143C5849E15', credential2: 'D36CE9ABA6F74C119D764143C5849E15' }
+      # helper = OffsitePayments::Integrations::PagSeguro::Helper.new(_options[:order_id], _options[:customer], opt)
 
       # if VALID_CCS.include?(credit_card.number) || (profile_id&.starts_with?('PAGS-'))
       if (profile_id&.starts_with?('PAGS-'))
-        ActiveMerchant::Billing::Response.new(true, 'Bogus Gateway: Forced success', {}, test: true, authorization: '12345', avs_result: { code: 'D' })
+        ActiveMerchant::Billing::Response.new(true, 'PagSeguro Gateway: Forced success', {}, test: true, authorization: '12345', avs_result: { code: 'D' })
       else
-        ActiveMerchant::Billing::Response.new(false, 'Bogus Gateway: Forced failure', { message: 'Bogus Gateway: Forced failure' }, test: true)
+        ActiveMerchant::Billing::Response.new(false, 'PagSeguro Gateway: Forced failure', { message: 'PagSeguro Gateway: Forced failure' }, test: true)
       end
     end
 
     def purchase(_money, credit_card, _options = {})
       binding.pry if Rails.env.development?
       profile_id = credit_card.gateway_customer_profile_id
+
       if VALID_CCS.include?(credit_card.number) || (profile_id&.starts_with?('PAGS-'))
-        ActiveMerchant::Billing::Response.new(true, 'Bogus Gateway: Forced success', {}, test: true, authorization: '12345', avs_result: { code: 'M' })
+        ActiveMerchant::Billing::Response.new(true, 'PagSeguro Gateway: Forced success', {}, test: true, authorization: '12345', avs_result: { code: 'M' })
       else
-        ActiveMerchant::Billing::Response.new(false, 'Bogus Gateway: Forced failure', message: 'Bogus Gateway: Forced failure', test: true)
+        ActiveMerchant::Billing::Response.new(false, 'PagSeguro Gateway: Forced failure', message: 'PagSeguro Gateway: Forced failure', test: true)
       end
     end
 
     def credit(_money, _credit_card, _response_code, _options = {})
-      ActiveMerchant::Billing::Response.new(true, 'Bogus Gateway: Forced success', {}, test: true, authorization: '12345')
+      ActiveMerchant::Billing::Response.new(true, 'PagSeguro Gateway: Forced success', {}, test: true, authorization: '12345')
     end
 
     def capture(_money, authorization, _gateway_options)
       binding.pry if Rails.env.development?
+
+      order_id = _gateway_options[:order_id]
+      current_order = Spree::Order.find_by_number(order_id.split('-')[0])
+
+      payment = Object::PagSeguro::PaymentRequest.new
+
+      current_order.line_items.each do |item|
+        amount = (item.price.to_f * 100).to_i
+        quantity = item.quantity
+
+        # Hash tem que ser tem que ser exatamente essas
+        payment.items << { id: item.product.id, description: item.product.name, amount: amount, quantity: quantity }
+      end
+
+      payment.extra_params << _gateway_options[:customer]
+
+      response = payment.register
+    
+      if response.errors.any?
+        raise response.errors.join("\n")
+      else   
+        redirect_to response.url
+      end
+
       if authorization == '12345'
-        ActiveMerchant::Billing::Response.new(true, 'Bogus Gateway: Forced success', {}, test: true)
+        ActiveMerchant::Billing::Response.new(true, 'PagSeguro Gateway: Forced success', {}, test: true)
       else
-        ActiveMerchant::Billing::Response.new(false, 'Bogus Gateway: Forced failure', error: 'Bogus Gateway: Forced failure', test: true)
+        ActiveMerchant::Billing::Response.new(false, 'PagSeguro Gateway: Forced failure', error: 'PagSeguro Gateway: Forced failure', test: true)
       end
     end
 
     def void(_response_code, _credit_card, _options = {})
-      ActiveMerchant::Billing::Response.new(true, 'Bogus Gateway: Forced success', {}, test: true, authorization: '12345')
+      ActiveMerchant::Billing::Response.new(true, 'PagSeguro Gateway: Forced success', {}, test: true, authorization: '12345')
     end
 
     def cancel(_response_code)
-      ActiveMerchant::Billing::Response.new(true, 'Bogus Gateway: Forced success', {}, test: true, authorization: '12345')
+      ActiveMerchant::Billing::Response.new(true, 'PagSeguro Gateway: Forced success', {}, test: true, authorization: '12345')
     end
 
     def test?
-      # Test mode is not really relevant with bogus gateway (no such thing as live server)
+      # Test mode is not really relevant with PagSeguro gateway (no such thing as live server)
       true
     end
 

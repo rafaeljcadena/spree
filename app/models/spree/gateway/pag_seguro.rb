@@ -47,6 +47,7 @@ module Spree
     def purchase(_money, credit_card, _options = {})
       binding.pry if Rails.env.development?
       profile_id = credit_card.gateway_customer_profile_id
+      payment = build_pagseguro_payment(_money, credit_card, _options)
 
       if VALID_CCS.include?(credit_card.number) || (profile_id&.starts_with?('PAGS-'))
         ActiveMerchant::Billing::Response.new(true, 'PagSeguro Gateway: Forced success', {}, test: true, authorization: '12345', avs_result: { code: 'M' })
@@ -62,21 +63,7 @@ module Spree
     def capture(_money, authorization, _gateway_options)
       binding.pry if Rails.env.development?
 
-      order_id = _gateway_options[:order_id]
-      current_order = Spree::Order.find_by_number(order_id.split('-')[0])
-
-      payment = Object::PagSeguro::PaymentRequest.new
-
-      current_order.line_items.each do |item|
-        amount = (item.price.to_f * 100).to_i
-        quantity = item.quantity
-
-        # Hash tem que ser tem que ser exatamente essas
-        payment.items << { id: item.product.id, description: item.product.name, amount: amount, quantity: quantity }
-      end
-
-      payment.extra_params << _gateway_options[:customer]
-
+      payment = build_pagseguro_payment(_money, authorization, _gateway_options)
       response = payment.register
     
       if response.errors.any?
@@ -85,10 +72,10 @@ module Spree
         redirect_to response.url
       end
 
-      if authorization == '12345'
+      if authorization == '12345' && response.errors.blank?
         ActiveMerchant::Billing::Response.new(true, 'PagSeguro Gateway: Forced success', {}, test: true)
       else
-        ActiveMerchant::Billing::Response.new(false, 'PagSeguro Gateway: Forced failure', error: 'PagSeguro Gateway: Forced failure', test: true)
+        ActiveMerchant::Billing::Response.new(false, 'PagSeguro Gateway: Forced failure', error: response.errors.join("\n"), test: true)
       end
     end
 
@@ -114,6 +101,24 @@ module Spree
     end
 
     private
+
+    def build_pagseguro_payment(_money, _credit_card, options = {})
+      order_id = options[:order_id]
+      current_order = Spree::Order.find_by_number(order_id.split('-')[0])
+
+      payment = Object::PagSeguro::PaymentRequest.new
+
+      current_order.line_items.each do |item|
+        amount = (item.price.to_f * 100).to_i
+        quantity = item.quantity
+
+        # Hash tem que ser tem que ser exatamente essas
+        payment.items << { id: item.product.id, description: item.product.name, amount: amount, quantity: quantity }
+      end
+
+      payment.extra_params << options[:customer]
+      payment
+    end
 
     def generate_profile_id(success)
       record = true

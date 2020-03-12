@@ -1,0 +1,21 @@
+# Git files
+.git
+ 
+# Useless files
+.DS_Store
+Dockerfile
+ 
+# Rails temp files
+/tmp/*
+/log/*.log
+/storage/*
+ 
+# Vagrant log files
+*console.log
+ 
+# Database dump files
+/*.dump
+/*.dump.gz
+/*dump.rdb
+ 
+# Put your app useless files after this. Check .gitignore to look for these files.
